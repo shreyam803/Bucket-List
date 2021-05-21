@@ -10,6 +10,17 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    phoneNumber: {
+        type: Number,
+        required: true,
+        trim: true,
+        unique: true,
+        validate(value) {
+            if (value < 10) {
+                throw new Error('Phone no should be of 10 digit.');
+            }
+        }
+    },
     email: {
         type: String,
         unique: true,
@@ -35,7 +46,7 @@ const userSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
-        default: 0,
+        required: true,
         validate(value) {
             if (value < 0) {
                 throw new Error('Age must be a positive number');
@@ -51,10 +62,9 @@ const userSchema = new mongoose.Schema({
     avatar: {
         type: Buffer
     }
-},
-    {
-        timestamps: true
-    })
+}, {
+    timestamps: true
+})
 
 userSchema.virtual('tasks', {
     ref: 'Task',
@@ -62,7 +72,7 @@ userSchema.virtual('tasks', {
     foreignField: 'owner'
 })
 
-userSchema.methods.toJSON = function () {
+userSchema.methods.toJSON = function() {
     const user = this
     const userObject = user.toObject();
 
@@ -74,7 +84,7 @@ userSchema.methods.toJSON = function () {
 }
 
 
-userSchema.methods.generateAuthToken = async function () {
+userSchema.methods.generateAuthToken = async function() {
     const user = this
 
     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
@@ -86,7 +96,7 @@ userSchema.methods.generateAuthToken = async function () {
     return token
 }
 
-userSchema.statics.findByCredentials = async (email, password) => {
+userSchema.statics.findByCredentials = async(email, password) => {
     const user = await User.findOne({ email })
 
     if (!user) {
@@ -103,7 +113,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 }
 
 //hash the password before the user is saved
-userSchema.pre('save', async function (next) {          //should not be arrow functions but only standard function
+userSchema.pre('save', async function(next) { //should not be arrow functions but only standard function
     const user = this
 
     if (user.isModified('password')) {
@@ -113,7 +123,7 @@ userSchema.pre('save', async function (next) {          //should not be arrow fu
 })
 
 //delete tasks if user is deleted
-userSchema.pre('remove', async function (next) {
+userSchema.pre('remove', async function(next) {
     const user = this
 
     await Task.deleteMany({ owner: user._id })

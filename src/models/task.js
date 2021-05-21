@@ -1,26 +1,32 @@
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
-    description: {
+    title: {
         type: String,
         required: true,
         trim: true
     },
-    completed: {
-        type: Boolean,
-        default: false
-    },
+    urls: [{
+        subtitle: [{
+            type: String,
+            required: true,
+            trim: true
+        }],
+        url: [{
+            type: String,
+            required: true,
+            trim: true
+        }]
+    }],
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'                 //relationship between two mongoose models
+        ref: 'User'
     }
-},
-    {
-        timestamps: true
-    })
+}, {
+    timestamps: true
+})
 
 const Task = mongoose.model('Task', taskSchema);
 
 module.exports = Task;
-
