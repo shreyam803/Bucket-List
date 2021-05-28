@@ -5,6 +5,8 @@ const User = require('../models/user');
 const auth = require('../middleware/authentication');
 const { sendWelcomeEmail, sendCancelationEmail } = require('../emails/account')
 
+
+
 const router = new express.Router();
 
 router.post('/users', async(req, res) => {
@@ -138,5 +140,7 @@ router.delete('/users/me/avatar', auth, async(req, res) => {
     await req.user.save();
     res.send();
 })
+
+
 
 module.exports = router
